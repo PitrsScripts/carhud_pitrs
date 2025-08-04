@@ -1,8 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'CarHUD'
-description 'Modern Car HUD for ESX'
+author 'Pitrs'
+description 'Car Hud ESX'
 version '1.0.0'
 
 lua54 'yes'
