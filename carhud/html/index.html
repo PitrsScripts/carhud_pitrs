@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="hud" class="hidden">
+        <div class="speedometer">
+            <svg class="gauge" viewBox="0 0 300 180">
+                <path class="gauge-bg" d="M 30 150 A 120 120 0 0 1 270 150"></path>
+                <path class="gauge-fill" id="speed-arc" d="M 30 150 A 120 120 0 0 1 270 150"></path>
+            </svg>
+            
+
+
+            <div class="speed">
+                <div class="speed-digits">
+                    <span class="digit" id="digit1">0</span>
+                    <span class="digit" id="digit2">0</span>
+                    <span class="digit" id="digit3">0</span>
+                </div>
+                <span id="speed-unit">KMH</span>
+            </div>
+            <div class="cruise" id="cruise">
+                <i class="fas fa-road"></i>
+                <span id="cruise-speed">OFF</span>
+            </div>
+            
+            <div class="bottom-info">
+                <div class="fuel" id="fuel">
+                    <div class="fuel-icon-container">
+                        <i class="fas fa-gas-pump fuel-bg"></i>
+                        <i class="fas fa-gas-pump fuel-fill" id="fuel-fill"></i>
+                    </div>
+                    <span id="fuel-percent">100%</span>
+                </div>
+                <div class="limiter" id="limiter">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span id="limiter-speed">OFF</span>
+                </div>
+                <div class="engine" id="engine">
+                    <div class="engine-icon-container">
+                        <i class="fas fa-cog engine-bg"></i>
+                        <i class="fas fa-cog engine-fill" id="engine-fill"></i>
+                    </div>
+                    <span id="engine-percent">100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="settings" class="hidden">
+        <div class="settings-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-cog"></i> CarHUD Settings</h2>
+                <button class="close-btn" onclick="closeSettings()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <div>
+                            <label>Velikost HUD</label>
+                            <small>Změna velikosti speedometru</small>
+                        </div>
+                    </div>
+                    <div class="setting-controls">
+                        <button class="control-btn" onclick="changeScale(-0.1)">-</button>
+                        <span class="scale-display" id="scale-value">1.0x</span>
+                        <button class="control-btn" onclick="changeScale(0.1)">+</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="panel-footer">
+                <button class="save-btn" onclick="closeSettings()">
+                    <i class="fas fa-check"></i> Uložit
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="carhud.js"></script>
+</body>
+</html>
