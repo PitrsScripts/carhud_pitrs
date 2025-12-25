@@ -45,7 +45,7 @@ CreateThread(function()
                 SetVehicleMaxSpeed(vehicle, limiterSpeed / (Config.SpeedUnit == "MPH" and 2.236936 or 3.6))
             end
             
-            if cruiseControl then
+            if cruiseControl and IsVehicleOnAllWheels(vehicle) then
                 local targetSpeed = cruiseSpeed / (Config.SpeedUnit == "MPH" and 2.236936 or 3.6)
                 if speedConverted < cruiseSpeed - 2 then
                     SetVehicleForwardSpeed(vehicle, targetSpeed)
@@ -60,6 +60,10 @@ CreateThread(function()
                     PlaySoundFromEntity(-1, "ENGINE_FAIL", vehicle, "DLC_PILOT_ENGINE_FAILURE_SOUNDS", 0, 0)
                     lastEngineFailSound = currentTime
                 end
+            end
+            
+            if cruiseControl and not IsVehicleOnAllWheels(vehicle) then
+                cruiseControl = false
             end
             
             Wait(100)
