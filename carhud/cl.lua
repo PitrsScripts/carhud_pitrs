@@ -7,6 +7,8 @@ local limiterSpeed = 50
 local cruiseControl = false
 local cruiseSpeed = 50
 local lastEngineFailSound = 0
+local lastLimiterToggle = 0
+local lastCruiseToggle = 0
 
 CreateThread(function()
     while true do
@@ -66,6 +68,8 @@ CreateThread(function()
                 cruiseControl = false
             end
             
+
+            
             Wait(100)
         else
             if inVehicle then
@@ -93,61 +97,46 @@ RegisterNUICallback("closeSettings", function()
     SetNuiFocus(false, false)
 end)
 
-CreateThread(function()
-    while true do
-        if IsControlJustPressed(0, 306) and inVehicle then -- Y key (místo N)
-            local speed = GetEntitySpeed(GetVehiclePedIsIn(PlayerPedId(), false))
-            local currentSpeed = math.floor(Config.SpeedUnit == "MPH" and (speed * 2.236936) or (speed * 3.6))
-            
-            if not speedLimiter then
-                speedLimiter = true
-                limiterSpeed = currentSpeed > 10 and currentSpeed or 50
-                lib.notify({
-                    title = 'Omezovač rychlosti',
-                    description = 'Nastaven na ' .. limiterSpeed .. ' ' .. Config.SpeedUnit,
-                    type = 'success'
-                })
-            else
-                speedLimiter = false
-                SetVehicleMaxSpeed(GetVehiclePedIsIn(PlayerPedId(), false), 999.0)
-                lib.notify({
-                    title = 'Omezovač rychlosti',
-                    description = 'Vypnut',
-                    type = 'error'
-                })
-            end
-        end
+RegisterKeyMapping('togglelimiter', 'Toggle Speed Limiter', 'keyboard', 'Y')
+RegisterCommand('togglelimiter', function()
+    if inVehicle then
+        lastLimiterToggle = GetGameTimer()
+        local speed = GetEntitySpeed(GetVehiclePedIsIn(PlayerPedId(), false))
+        local currentSpeed = math.floor(Config.SpeedUnit == "MPH" and (speed * 2.236936) or (speed * 3.6))
         
-        if IsDisabledControlJustPressed(0, 244) and inVehicle then -- M key
-            local speed = GetEntitySpeed(GetVehiclePedIsIn(PlayerPedId(), false))
-            local currentSpeed = math.floor(Config.SpeedUnit == "MPH" and (speed * 2.236936) or (speed * 3.6))
-            
-            if not cruiseControl then
-                if currentSpeed > 20 then
-                    cruiseControl = true
-                    cruiseSpeed = currentSpeed
-                    lib.notify({
-                        title = 'Tempomat',
-                        description = 'Nastaven na ' .. cruiseSpeed .. ' ' .. Config.SpeedUnit,
-                        type = 'success'
-                    })
-                else
-                    lib.notify({
-                        title = 'Tempomat',
-                        description = 'Příliš pomalá rychlost',
-                        type = 'warning'
-                    })
-                end
-            else
-                cruiseControl = false
-                lib.notify({
-                    title = 'Tempomat',
-                    description = 'Vypnut',
-                    type = 'error'
-                })
-            end
+        if not speedLimiter then
+            speedLimiter = true
+            limiterSpeed = currentSpeed > 10 and currentSpeed or 50
+        else
+            speedLimiter = false
+            SetVehicleMaxSpeed(GetVehiclePedIsIn(PlayerPedId(), false), 999.0)
         end
-        
-        Wait(0)
     end
-end)
+end, false)
+
+RegisterKeyMapping('togglecruise', 'Toggle Cruise Control', 'keyboard', 'M')
+RegisterCommand('togglecruise', function()
+    if inVehicle then
+        lastCruiseToggle = GetGameTimer()
+        local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        local speed = GetEntitySpeed(vehicle)
+        local currentSpeed = math.floor(Config.SpeedUnit == "MPH" and (speed * 2.236936) or (speed * 3.6))
+        
+        local velocity = GetEntityVelocity(vehicle)
+        local forward = GetEntityForwardVector(vehicle)
+        local dot = velocity.x * forward.x + velocity.y * forward.y + velocity.z * forward.z
+        
+        if not cruiseControl then
+            if dot < 0 then
+                -- Cannot activate when moving backwards
+            elseif currentSpeed > 20 then
+                cruiseControl = true
+                cruiseSpeed = currentSpeed
+            else
+                -- Too slow
+            end
+        else
+            cruiseControl = false
+        end
+    end
+end, false)
